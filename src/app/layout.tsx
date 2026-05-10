@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import PageWrapper from "@/components/PageWrapper";
@@ -9,8 +9,9 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-const outfit = Outfit({
+const display = Poppins({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-display",
 });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${outfit.variable} bg-surface selection:bg-primary selection:text-surface`}>
+      <body className={`${inter.variable} ${display.variable} bg-bg antialiased selection:bg-accent-lime/30 selection:text-white`}>
         <Providers>
           <PageWrapper>{children}</PageWrapper>
         </Providers>

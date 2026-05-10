@@ -1,141 +1,234 @@
 /* 
   NOTE: "Unknown at rule" warnings (@theme, @utility, @apply) in this file are FALSE POSITIVES.
-  This project uses Tailwind CSS v4 which introduces these modern CSS features. 
-  The build pipeline (Turbopack) processes them correctly.
+  Tailwind CSS v4 + Turbopack process these directives correctly.
 */
 @import "tailwindcss";
 
 @theme {
-  /* Obsidian Editorial Palette - Human-Made Precision */
-  --color-surface: oklch(0.12 0.01 260);
-  --color-surface-raised: oklch(0.16 0.01 260);
-  --color-primary: oklch(0.85 0.18 145); /* Neon Green */
-  --color-primary-dim: oklch(0.4 0.1 145);
-  --color-accent: oklch(0.7 0.2 30); /* Coral Accent */
-  
-  --color-text: oklch(0.98 0.01 260);
-  --color-text-muted: oklch(0.6 0.01 260);
-  
-  --font-display: var(--font-display), "Outfit", sans-serif;
-  --font-body: var(--font-sans), "Inter", sans-serif;
+  /* Premium LMS palette (reference dashboard) */
+  --color-bg: #0a0a0a;
+  --color-sidebar: #090909;
+  --color-surface: #0a0a0a;
+  --color-surface-raised: #1a1a1a;
 
-  --radius-pro: 1.5rem;
+  --color-card: #1a1a1a;
+  --color-card-muted: #151515;
+
+  --color-accent-pink: #ff5c8d;
+  --color-accent-lime: #a4f644;
+  --color-accent-cyan: #4cc9f0;
+  --color-accent-yellow: #fee440;
+  --color-accent-teal: #37d9c5;
+
+  /* Legacy token names — map onto premium accents */
+  --color-primary: #a4f644;
+  --color-primary-dim: color-mix(in srgb, #a4f644 42%, transparent);
+  --color-accent: #ff5c8d;
+
+  --color-text: #fafafa;
+  --color-text-muted: #a0a0a0;
+  --color-muted: #a0a0a0;
+
+  --font-display: var(--font-display), "Poppins", system-ui, sans-serif;
+  --font-body: var(--font-sans), "Inter", system-ui, sans-serif;
+
+  --radius-premium-lg: 1.25rem;
+  --radius-premium-xl: 1.5rem;
+  --radius-pro: var(--radius-premium-xl);
   --radius-inner: 0.75rem;
 
-  --shadow-pro: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  --shadow-premium-soft: 0 18px 48px rgb(0 0 0 / 0.52), inset 0 1px rgb(255 255 255 / 0.04);
+
 }
 
 @layer base {
   :root {
-    background: var(--color-surface);
+    --accent-pink-glow: #ff5c8d;
+    --accent-lime-glow: #a4f644;
+    background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  body {
-    @apply min-h-screen selection:bg-primary/30 selection:text-primary relative;
+  html, body {
+    @apply min-h-screen selection:bg-accent-lime/25 selection:text-white;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    overscroll-behavior: none;
+  }
+
+  #__next, main {
+    min-height: 100vh;
   }
 
   body::before {
     content: "";
-    @apply fixed inset-0 z-[100] pointer-events-none opacity-[0.03] mix-blend-overlay;
+    @apply fixed inset-0 pointer-events-none z-[100];
+    opacity: 0.04;
+    mix-blend-mode: overlay;
     background-image: url("https://grainy-gradients.vercel.app/noise.svg");
   }
 
-  h1, h2, h3, h4 {
-    @apply font-display tracking-tight font-black;
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight font-semibold;
+    letter-spacing: -0.02em;
   }
 }
 
-/* Definition of Utilities for v4 Compatibility */
+
+/* Marketing / dashboard section titles */
+@utility headline-dashboard {
+  @apply font-display text-[clamp(2rem,4vw,2.85rem)] font-semibold tracking-tight text-white leading-[1.12];
+}
+
+@utility subhead-dashboard {
+  @apply text-muted text-[0.9375rem] sm:text-base leading-relaxed font-normal max-w-2xl;
+}
+
+@utility shadow-premium-soft {
+  box-shadow: var(--shadow-premium-soft);
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility sidebar-rail {
+  background: linear-gradient(180deg, #0c0c0c 0%, #080808 100%);
+}
+
+/* Glass panels — LMS cards */
 @utility glass-pro {
-  @apply bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-pro shadow-pro relative overflow-hidden;
-  background-image: 
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent),
-    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.01) 3px, transparent 3px);
-  background-size: 100% 100%, 100% 4px;
+  @apply backdrop-blur-2xl rounded-[var(--radius-premium-lg)] border border-white/[0.08];
+  background: linear-gradient(
+      155deg,
+      rgb(255 255 255 / 0.05) 0%,
+      transparent 42%
+    ),
+    var(--color-card);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.45), inset 0 1px rgb(255 255 255 / 0.04);
 }
 
 @utility btn-pro-primary {
-  @apply relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-5 
-         bg-primary text-surface font-black uppercase tracking-[0.2em] rounded-inner
-         hover:scale-[1.02] active:scale-[0.98] transition-all duration-500
-         shadow-[0_0_20px_rgba(180,255,50,0.2)] no-underline cursor-pointer border-none;
+  @apply relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-7 py-3
+         bg-white text-bg font-semibold text-sm tracking-tight shadow-premium-soft
+         transition-all duration-300 hover:-translate-y-px hover:opacity-[0.98] active:scale-[0.99]
+         no-underline cursor-pointer border-none;
 }
 
 @utility btn-pro-outline {
-  @apply relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-3 
-         bg-transparent text-white border border-white/10 font-black uppercase tracking-[0.2em] rounded-inner
-         hover:bg-white/5 transition-all duration-500 no-underline cursor-pointer;
+  @apply relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-medium
+         border border-white/[0.12] text-white bg-transparent backdrop-blur-sm
+         hover:bg-white/[0.06] transition-all duration-300 no-underline cursor-pointer;
 }
 
 @utility input-pro {
-  @apply w-full px-6 py-4 bg-white/[0.02] border border-white/5 rounded-inner
-         text-white placeholder:text-white/20 outline-none
-         focus:border-primary/50 focus:bg-white/[0.05] transition-all duration-300;
+  @apply w-full px-6 py-4 rounded-xl border outline-none transition-all duration-300
+         bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/35
+         focus:border-accent-cyan/55 focus:bg-white/[0.07];
 }
 
 @utility gradient-text {
-  @apply bg-clip-text text-transparent bg-linear-to-r from-white via-white to-white/50;
+  @apply bg-clip-text text-transparent bg-linear-to-r from-white via-white to-white/60;
 }
 
 @utility neon-text {
-  @apply text-primary drop-shadow-[0_0_8px_rgba(180,255,50,0.5)];
+  @apply text-accent-lime;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, #a4f644 42%, transparent));
 }
 
 @utility text-editorial {
-  @apply text-[0.65rem] font-black uppercase tracking-[0.3em] text-primary/80 block;
+  @apply block text-[0.65rem] font-bold uppercase tracking-[0.24em] text-muted;
 }
 
 @layer components {
-  .btn-pro-primary::after {
-    @apply content-[''] absolute inset-0 bg-white/20 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700 ease-in-out;
+  .page-shell {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: min(94rem, 100%);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  .page-shell.page-shell--narrow {
+    max-width: min(45rem, 100%);
+  }
+  .page-shell.page-shell--form {
+    max-width: min(55rem, 100%);
+  }
+  .page-shell.page-shell--wide {
+    max-width: min(80rem, 100%);
+  }
+  @media (min-width: 640px) {
+    .page-shell {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .page-shell {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
   }
 
-  /* Cinematic Mesh */
   .mesh-gradient {
-    background-color: var(--color-surface);
-    background-image: 
-      radial-gradient(at 0% 0%, oklch(0.2 0.1 260) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, oklch(0.2 0.05 145 / 0.1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, oklch(0.2 0.1 30 / 0.05) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, oklch(0.15 0.05 260) 0px, transparent 50%);
-  }
-
-  .nav-pill {
-    @apply fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-pro px-6 py-3 rounded-full flex items-center gap-8 border-white/5;
+    background-color: var(--color-bg);
+    background-image:
+      radial-gradient(at 14% 8%, rgb(164 246 68 / 0.11) 0px, transparent 44%),
+      radial-gradient(at 88% 0%, rgb(255 92 141 / 0.12) 0px, transparent 46%),
+      radial-gradient(at 92% 86%, rgb(76 201 240 / 0.1) 0px, transparent 48%),
+      radial-gradient(at 0% 96%, rgb(254 228 64 / 0.06) 0px, transparent 52%);
   }
 }
 
-/* Custom Scrollbar for Obsidian feel */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-surface;
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-primary/50 transition-colors;
+  @apply rounded-full bg-white/[0.1] hover:bg-accent-cyan/35 transition-colors;
 }
 
-/* Animations - Human Easing */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .animate-float {
   animation: float 6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-in {
-  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

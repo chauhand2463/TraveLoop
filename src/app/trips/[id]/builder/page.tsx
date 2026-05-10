@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import AppChrome from "@/components/AppChrome";
 import { addStop, removeStop, addActivityToStop, removeActivityFromStop } from "@/actions/trips";
 import { formatCurrency } from "@/lib/utils";
 import { MapPin, Plus, Trash2, Search, ArrowLeft, ChevronDown, ChevronUp, Sparkles, Navigation, Activity as ActivityIcon } from "lucide-react";
@@ -94,36 +94,33 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
 
   if (loading || !trip) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <Navigation className="text-primary" size={40} />
-        </motion.div>
-      </div>
+      <AppChrome>
+        <div className="flex justify-center py-52">
+          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
+            <Navigation className="text-accent-lime" size={40} />
+          </motion.div>
+        </div>
+      </AppChrome>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface">
-      <Navbar />
-      
-      <main className="max-w-[1400px] mx-auto px-6 pt-32 pb-20">
-        <Link href={`/trips/${tripId}`} className="inline-flex items-center gap-2 text-[0.65rem] font-black uppercase tracking-widest text-text-muted hover:text-primary transition-colors no-underline mb-8">
-          <ArrowLeft size={14} /> Back to Sequence Detail
+    <AppChrome>
+      <main className="page-shell py-12 lg:pb-28">
+        <Link href={`/trips/${tripId}`} className="mb-10 inline-flex items-center gap-2 font-display text-[12px] font-semibold uppercase tracking-[0.2em] text-muted hover:text-accent-cyan transition-colors no-underline hover:gap-3">
+          <ArrowLeft size={18} strokeWidth={1.75} /> Trip overview
         </Link>
 
-        <header className="mb-16">
-          <div className="flex items-center gap-3 mb-4">
-             <span className="text-editorial">Trajectory Orchestration</span>
-             <div className="h-[1px] flex-1 bg-white/10" />
+        <header className="mb-14 space-y-4">
+          <div className="flex items-center gap-3 mb-5">
+             <span className="text-editorial">Trip builder</span>
+             <div className="h-px flex-1 bg-white/10" />
           </div>
-          <h1 className="text-5xl lg:text-7xl font-black tracking-tighter text-white font-display uppercase">
-            ITINERARY <span className="text-primary">BUILDER</span>
+          <h1 className="headline-dashboard leading-tight">
+            Shape your <span className="text-accent-pink">itinerary</span>
           </h1>
-          <p className="text-xl text-text-muted mt-4 max-w-2xl">
-            {trip.name} — Phase {trip.stops.length + 1} Optimization.
+          <p className="subhead-dashboard mt-2 max-w-2xl">
+            {trip.name} · {trip.stops.length} stop{trip.stops.length !== 1 ? "s" : ""} routed
           </p>
         </header>
 
@@ -149,7 +146,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
                   className="glass-pro p-6 space-y-6 bg-white/[0.04] will-change-[opacity,transform]"
                 >
                   <div className="relative group">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" size={16} />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={16} />
                     <input
                       className="input-pro pl-12 h-14 bg-white/[0.03] border-white/5"
                       placeholder="Search global registry for destination nodes..."
@@ -166,7 +163,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
                       >
                         <div>
                           <p className="text-sm font-black text-white uppercase group-hover:text-primary">{city.name}</p>
-                          <p className="text-[0.6rem] font-medium text-text-muted uppercase tracking-widest">{city.country}</p>
+                          <p className="text-[0.6rem] font-medium text-muted uppercase tracking-widest">{city.country}</p>
                         </div>
                         <span className="text-[0.6rem] font-black text-primary opacity-40 group-hover:opacity-100">+{city.costIndex}</span>
                       </button>
@@ -178,8 +175,8 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
 
             {trip.stops.length === 0 ? (
               <div className="glass-pro p-20 text-center space-y-6">
-                <MapPin size={48} className="mx-auto text-text-muted/20 animate-bounce" />
-                <p className="text-text-muted text-[0.7rem] font-black uppercase tracking-[0.2em]">Zero nodes in sequence. Initialize movement protocol.</p>
+                <MapPin size={48} className="mx-auto text-muted/20 animate-bounce" />
+                <p className="text-muted text-[0.7rem] font-black uppercase tracking-[0.2em]">Zero nodes in sequence. Initialize movement protocol.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -204,7 +201,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
                           <h4 className="text-2xl font-black text-white font-display tracking-tight uppercase group-hover:text-primary transition-colors">
                             {stop.city.name}
                           </h4>
-                          <p className="text-[0.65rem] font-black uppercase tracking-widest text-text-muted">
+                          <p className="text-[0.65rem] font-black uppercase tracking-widest text-muted">
                             <MapPin size={10} className="inline mr-1 text-primary" /> {stop.city.country}
                           </p>
                         </div>
@@ -258,7 +255,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
                               </div>
                             ))}
                             {stop.activities.length === 0 && (
-                              <p className="text-center text-[0.65rem] font-black uppercase tracking-widest text-text-muted py-6">No specific activities allocated to this node.</p>
+                              <p className="text-center text-[0.65rem] font-black uppercase tracking-widest text-muted py-6">No specific activities allocated to this node.</p>
                             )}
                           </div>
                         </motion.div>
@@ -280,9 +277,9 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
               {!selectedStop ? (
                 <div className="glass-pro p-16 text-center space-y-6 border-dashed border-white/10">
                   <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                     <ActivityIcon size={32} className="text-text-muted/20" />
+                     <ActivityIcon size={32} className="text-muted/20" />
                   </div>
-                  <p className="text-text-muted text-[0.7rem] font-black uppercase tracking-[0.2em] max-w-[240px] mx-auto">
+                  <p className="text-muted text-[0.7rem] font-black uppercase tracking-[0.2em] max-w-[240px] mx-auto">
                     Select a movement node in the sequence to browse operational activities.
                   </p>
                 </div>
@@ -293,7 +290,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
                   className="space-y-6"
                 >
                   <div className="relative group">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" size={16} />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={16} />
                     <input
                       className="input-pro pl-12 h-14 bg-white/[0.03] border-white/5"
                       placeholder={`Search activities in ${trip.stops.find(s => s.id === selectedStop)?.city.name}...`}
@@ -304,7 +301,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
 
                   <div className="space-y-4 max-h-[calc(100vh-400px)] overflow-auto pr-4 custom-scrollbar">
                     {filteredActivities.length === 0 ? (
-                      <p className="text-center text-[0.65rem] font-black uppercase tracking-widest text-text-muted py-12">No matching operations detected.</p>
+                      <p className="text-center text-[0.65rem] font-black uppercase tracking-widest text-muted py-12">No matching operations detected.</p>
                     ) : (
                       filteredActivities.map((act) => (
                         <div key={act.id} className="glass-pro p-6 hover:border-primary/30 transition-all group relative overflow-hidden">
@@ -330,7 +327,7 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
                             </div>
                           </div>
                           {act.description && (
-                            <p className="text-[0.7rem] text-text-muted leading-relaxed font-medium line-clamp-2 relative z-10">
+                            <p className="text-[0.7rem] text-muted leading-relaxed font-medium line-clamp-2 relative z-10">
                               {act.description}
                             </p>
                           )}
@@ -360,6 +357,6 @@ export default function BuilderPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
       </main>
-    </div>
+    </AppChrome>
   );
 }

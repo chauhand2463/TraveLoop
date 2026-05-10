@@ -2,7 +2,8 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatDateRange, formatCurrency, getDaysBetween } from "@/lib/utils";
 import Link from "next/link";
-import { MapPin, Calendar, DollarSign, Globe, Sparkles, Copy } from "lucide-react";
+import AppChrome from "@/components/AppChrome";
+import { MapPin, Calendar, DollarSign, Globe } from "lucide-react";
 
 export default async function SharedTripPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -24,136 +25,125 @@ export default async function SharedTripPage({ params }: { params: Promise<{ tok
 
   if (!trip || !trip.isPublic) notFound();
 
-  const totalCost = trip.expenses.reduce((s: number, e: any) => s + e.amount, 0) +
-    trip.stops.reduce((s: number, st: any) => s + st.activities.reduce((a: number, sa: any) => a + sa.cost, 0), 0);
+  const totalCost =
+    trip.expenses.reduce((s: number, e: { amount: number }) => s + e.amount, 0) +
+    trip.stops.reduce(
+      (s: number, st: { activities: { cost: number }[] }) =>
+        s + st.activities.reduce((a: number, sa: { cost: number }) => a + sa.cost, 0),
+      0
+    );
   const days = getDaysBetween(trip.startDate, trip.endDate);
+  const activityCount = trip.stops.reduce(
+    (s: number, st: { activities: unknown[] }) => s + st.activities.length,
+    0
+  );
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-surface)" }}>
-      {/* Header */}
-      <nav
-        style={{
-          background: "oklch(1 0 0 / 0.85)",
-          backdropFilter: "blur(16px)",
-          borderBottom: "1px solid var(--color-border-light)",
-          padding: "0 1.5rem",
-          height: "64px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          maxWidth: "100%",
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: "flex", alignItems: "center", gap: "0.5rem",
-            textDecoration: "none", fontFamily: "var(--font-display)",
-            fontWeight: 800, fontSize: "1.25rem",
-          }}
-        >
-          <span
-            style={{
-              width: "30px", height: "30px", borderRadius: "var(--radius-sm)",
-              background: "linear-gradient(135deg, var(--color-primary), var(--color-coral))",
-              color: "white", display: "inline-flex", alignItems: "center", justifyContent: "center",
-              fontSize: "0.9rem",
-            }}
-          >
-            ✈
-          </span>
-          <span className="gradient-text">Traveloop</span>
-        </Link>
-        <Link href="/register" className="btn btn-sm btn-primary">
-          Create Your Own Trip
-        </Link>
-      </nav>
+    <AppChrome contentClassName="page-shell page-shell--form py-10 lg:py-12">
+      <div className="mb-10 rounded-full border border-accent-cyan/35 bg-accent-cyan/[0.06] px-6 py-3 text-[13px] uppercase tracking-[0.3em] text-accent-cyan w-fit font-bold">
+        Public link · live view
+      </div>
 
-      <main style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem 1.5rem 4rem" }}>
-        <div className="badge badge-accent animate-in" style={{ marginBottom: "1rem" }}>
-          Shared Itinerary
+      <header className="mb-16 animate-in space-y-4">
+        <h1 className="text-6xl lg:text-[4.5rem] tracking-tight font-semibold text-white leading-none">
+          {trip.name}
+        </h1>
+        <p className="text-gray-400 font-medium text-lg flex gap-10 flex-wrap gap-y-3">
+          <Calendar className="shrink-0 text-accent-pink" strokeWidth={1.75} size={25} />
+          {formatDateRange(trip.startDate, trip.endDate)} · {days} days
+          {trip.user.name && <span className="opacity-80">· {trip.user.name}</span>}
+        </p>
+        {trip.description && (
+          <p className="text-muted text-lg max-w-[720px] leading-relaxed">{trip.description}</p>
+        )}
+      </header>
+
+      <div className="grid gap-5 sm:grid-cols-3 mb-20">
+        <div className="glass-pro rounded-[20px] px-6 py-9 text-center">
+          <div className="text-5xl font-semibold tracking-tight text-accent-cyan">{trip.stops.length}</div>
+          <p className="text-[12px] uppercase tracking-[0.2em] font-bold text-muted mt-3">Cities</p>
         </div>
-
-        <div className="animate-in" style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2.5rem", fontFamily: "var(--font-display)", marginBottom: "0.5rem" }}>
-            {trip.name}
-          </h1>
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "1.05rem", display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-            <Calendar size={14} /> {formatDateRange(trip.startDate, trip.endDate)} · {days} days
-            {trip.user.name && (
-              <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                · by {trip.user.name}
-              </span>
-            )}
-          </p>
-          {trip.description && (
-            <p style={{ color: "var(--color-text-secondary)", marginTop: "0.75rem", lineHeight: 1.7 }}>
-              {trip.description}
-            </p>
-          )}
+        <div className="glass-pro rounded-[20px] px-6 py-9 text-center">
+          <div className="text-5xl font-semibold tracking-tight text-accent-pink">{activityCount}</div>
+          <p className="text-[12px] uppercase tracking-[0.2em] font-bold text-muted mt-3">Activities</p>
         </div>
-
-        {/* Stats */}
-        <div className="animate-in" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "2.5rem" }}>
-          <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
-            <div style={{ fontSize: "1.5rem", fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--color-primary)" }}>{trip.stops.length}</div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--color-text-muted)" }}>Cities</div>
-          </div>
-          <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
-            <div style={{ fontSize: "1.5rem", fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--color-coral)" }}>
-              {trip.stops.reduce((s: number, st: any) => s + st.activities.length, 0)}
-            </div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--color-text-muted)" }}>Activities</div>
-          </div>
-          <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
-            <div style={{ fontSize: "1.5rem", fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--color-accent)" }}>{formatCurrency(totalCost)}</div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--color-text-muted)" }}>Est. Cost</div>
-          </div>
+        <div className="glass-pro rounded-[20px] px-6 py-9 text-center">
+          <div className="text-5xl font-semibold tracking-tight text-accent-yellow">{formatCurrency(totalCost)}</div>
+          <p className="text-[12px] uppercase tracking-[0.2em] font-bold text-muted mt-3">Est. spend</p>
         </div>
+      </div>
 
-        {/* Itinerary */}
-        <h2 className="animate-in" style={{ fontSize: "1.35rem", fontFamily: "var(--font-display)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <Globe size={18} /> Full Itinerary
-        </h2>
+      <h2 className="text-2xl font-semibold mb-8 flex gap-4 items-center text-white animate-in">
+        <Globe strokeWidth={1.75} className="text-accent-lime" size={28} /> Route
+      </h2>
 
-        <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-          {trip.stops.map((stop: any, idx: number) => (
-            <div key={stop.id} className="card card-elevated" style={{ padding: "1.5rem" }}>
-              <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-                <div
-                  style={{
-                    width: "40px", height: "40px", borderRadius: "var(--radius-full)",
-                    background: "linear-gradient(135deg, var(--color-primary), var(--color-coral))",
-                    color: "white", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontWeight: 800, fontSize: "0.875rem", flexShrink: 0,
-                  }}
-                >
+      <div className="flex flex-col gap-8 animate-in pb-12">
+        {trip.stops.map(
+          (
+            stop: {
+              id: string;
+              city: { name: string; country: string };
+              startDate: Date;
+              endDate: Date;
+              activities: {
+                id: string;
+                cost: number;
+                activity: { name: string; type: string };
+              }[];
+            },
+            idx: number
+          ) => (
+            <div key={stop.id} className="glass-pro rounded-[22px] p-8">
+              <div className="flex gap-6">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-accent-lime to-accent-cyan font-bold text-bg text-lg shadow-premium-soft border border-white/10">
                   {idx + 1}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, fontFamily: "var(--font-display)" }}>{stop.city.name}</h3>
-                  <p style={{ fontSize: "0.8125rem", color: "var(--color-text-muted)", marginBottom: "0.75rem" }}>
-                    {stop.city.country} · {formatDateRange(stop.startDate, stop.endDate)}
-                  </p>
+                <div className="min-w-0 flex-1 space-y-6">
+                  <div>
+                    <h3 className="text-2xl leading-tight font-semibold text-white">{stop.city.name}</h3>
+                    <p className="text-sm text-muted uppercase tracking-[0.22em] mt-3 font-medium">
+                      <MapPin strokeWidth={1.75} size={16} /> {stop.city.country} ·{" "}
+                      {formatDateRange(stop.startDate, stop.endDate)}
+                    </p>
+                  </div>
                   {stop.activities.length > 0 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      {stop.activities.map((sa: any) => (
-                        <div key={sa.id} style={{ display: "flex", justifyContent: "space-between", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-sm)", background: "var(--color-surface-alt)", fontSize: "0.875rem" }}>
-                          <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <span className="badge badge-primary" style={{ fontSize: "0.6rem", padding: "0.1rem 0.4rem" }}>{sa.activity.type}</span>
-                            {sa.activity.name}
-                          </span>
-                          <span style={{ fontWeight: 600, color: "var(--color-accent-dark)" }}>{formatCurrency(sa.cost)}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <ul className="space-y-3">
+                      {stop.activities.map(
+                        (sa: { id: string; cost: number; activity: { name: string; type: string } }) => (
+                          <li
+                            key={sa.id}
+                            className="flex flex-wrap gap-4 justify-between items-center rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-3.5"
+                          >
+                            <span className="flex gap-4 items-center flex-wrap min-w-0">
+                              <span className="rounded-full border border-accent-cyan/30 text-accent-cyan text-[11px] font-bold uppercase tracking-wider px-4 py-1.5">
+                                {sa.activity.type}
+                              </span>
+                              <span className="text-white font-medium truncate">{sa.activity.name}</span>
+                            </span>
+                            <span className="text-accent-cyan font-semibold flex items-center gap-3 shrink-0">
+                              <DollarSign size={16} strokeWidth={1.75} />
+                              {formatCurrency(sa.cost)}
+                            </span>
+                          </li>
+                        )
+                      )}
+                    </ul>
                   )}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </main>
-    </div>
+          )
+        )}
+      </div>
+
+      <div className="flex flex-wrap gap-5 justify-center pt-8">
+        <Link href="/register" className="btn-pro-primary px-10 py-5">
+          Claim your own itinerary
+        </Link>
+        <Link href="/" className="btn-pro-outline px-10 py-5">
+          Explore Traveloop
+        </Link>
+      </div>
+    </AppChrome>
   );
 }

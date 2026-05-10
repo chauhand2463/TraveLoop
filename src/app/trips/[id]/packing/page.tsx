@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
+import AppChrome from "@/components/AppChrome";
 import Link from "next/link";
 import { addPackingItem, togglePackingItem, deletePackingItem } from "@/actions/trips";
 import { ArrowLeft, ListChecks, Plus, Check, Trash2, RotateCcw } from "lucide-react";
@@ -66,12 +66,11 @@ export default function PackingPage({ params }: { params: Promise<{ id: string }
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <main style={{ maxWidth: "700px", margin: "0 auto", padding: "4rem 1.5rem", textAlign: "center" }}>
-          <div className="skeleton" style={{ width: "200px", height: "28px", margin: "0 auto" }} />
+      <AppChrome>
+        <main className="max-w-[700px] mx-auto px-6 py-28 text-center">
+          <div className="animate-pulse h-8 bg-white/[0.08] rounded-xl w-48 mx-auto" />
         </main>
-      </>
+      </AppChrome>
     );
   }
 
@@ -85,18 +84,16 @@ export default function PackingPage({ params }: { params: Promise<{ id: string }
   const pct = total > 0 ? Math.round((packed / total) * 100) : 0;
 
   return (
-    <>
-      <Navbar />
-      <main style={{ maxWidth: "700px", margin: "0 auto", padding: "2rem 1.5rem 4rem" }}>
-        <Link href={`/trips/${tripId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.875rem", marginBottom: "1.5rem" }}>
-          <ArrowLeft size={14} /> Back to Trip
+    <AppChrome contentClassName="page-shell page-shell--narrow py-10 lg:py-12">
+      <main className="">
+        <Link href={`/trips/${tripId}`} className="inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-muted hover:text-accent-cyan transition-colors mb-10 no-underline">
+          <ArrowLeft size={16} strokeWidth={1.75} /> Trip overview
         </Link>
 
-        <div className="animate-in" style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2rem", fontFamily: "var(--font-display)" }}>
-            Packing <span className="gradient-text">Checklist</span>
+        <div className="animate-in mb-12 space-y-2">
+          <h1 className="text-5xl lg:text-[2.85rem] font-semibold tracking-tight text-white">
+            Packing checklist
           </h1>
-          <p style={{ color: "var(--color-text-secondary)" }}>{tripName}</p>
         </div>
 
         {/* Progress */}
@@ -190,6 +187,6 @@ export default function PackingPage({ params }: { params: Promise<{ id: string }
           </div>
         )}
       </main>
-    </>
+    </AppChrome>
   );
 }

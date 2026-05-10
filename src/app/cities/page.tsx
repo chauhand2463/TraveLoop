@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
-import Navbar from "@/components/Navbar";
-import { MapPin, Search, TrendingUp, DollarSign, Globe, Navigation, Activity, Sparkles } from "lucide-react";
+import AppChrome from "@/components/AppChrome";
+import { MapPin, Search, DollarSign, Globe, Navigation, Activity, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export default async function CitiesPage({ searchParams }: { searchParams: Promise<{ q?: string; region?: string }> }) {
@@ -33,101 +33,103 @@ export default async function CitiesPage({ searchParams }: { searchParams: Promi
   });
 
   return (
-    <div className="min-h-screen bg-surface">
-      <Navbar />
-      
-      <main className="max-w-[1400px] mx-auto px-6 pt-32 pb-20 space-y-16">
-        {/* Editorial Header */}
-        <div className="space-y-4">
-           <span className="text-editorial">Destination Index</span>
-           <h1 className="text-6xl lg:text-8xl font-black text-white font-display tracking-tighter uppercase leading-none">
-             Global <span className="text-primary">Registry</span>
-           </h1>
-           <p className="text-text-muted text-xl max-w-2xl font-medium">
-             Search and analyze global destination nodes to optimize your next movement protocol.
-           </p>
-        </div>
+    <AppChrome>
+      <main className="page-shell py-10 lg:py-14 pb-16 space-y-12">
+        <header className="space-y-4">
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-editorial text-accent-cyan">Discover</span>
+            <div className="h-px flex-1 bg-white/10 max-w-[180px]" />
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white tracking-tight">
+            Explore <span className="text-accent-cyan">Cities</span>
+          </h1>
+          <p className="text-muted text-lg max-w-2xl">
+            Search destinations, compare costs, and preview activities to plan your perfect itinerary.
+          </p>
+        </header>
 
-        {/* Search Protocol */}
-        <form className="glass-pro p-4 rounded-3xl flex flex-wrap gap-4 items-center bg-white/[0.02]">
-          <div className="relative flex-1 min-w-[300px]">
-            <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted" />
+        <form className="glass-pro p-4 rounded-2xl flex flex-wrap gap-4 items-center">
+          <div className="relative flex-1 min-w-[250px]">
+            <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-muted" />
             <input 
               name="q" 
               defaultValue={query} 
-              className="input-pro pl-14 h-14 bg-white/[0.03] border-white/5 focus:bg-white/[0.08]" 
-              placeholder="Query city or sovereign state..." 
+              className="input-pro pl-12 h-12 bg-white/[0.03] border-white/[0.06]" 
+              placeholder="Search cities..." 
             />
           </div>
           <select 
             name="region" 
             defaultValue={region} 
-            className="input-pro h-14 bg-white/[0.03] border-white/5 w-full md:w-64 cursor-pointer"
+            className="input-pro h-12 bg-white/[0.03] border-white/[0.06] w-full md:w-56 cursor-pointer"
           >
-            <option value="">All Global Regions</option>
+            <option value="">All Regions</option>
             {regions.map((r: any) => (
-              <option key={r.region} value={r.region || ""} className="bg-surface">{r.region}</option>
+              <option key={r.region} value={r.region || ""}>{r.region}</option>
             ))}
           </select>
-          <button type="submit" className="btn-pro-primary h-14 px-10 rounded-2xl whitespace-nowrap">
-            Analyze Index
+          <button type="submit" className="btn-pro-primary h-12 px-8">
+            Search
           </button>
         </form>
 
-        {/* Tactical Results */}
         {cities.length === 0 ? (
-          <div className="glass-pro p-24 text-center space-y-6">
-            <Globe size={80} className="mx-auto text-text-muted opacity-20 animate-pulse" />
-            <p className="text-xl text-text-muted font-black uppercase tracking-widest">No matching nodes detected in the registry.</p>
+          <div className="glass-pro p-16 text-center">
+            <Globe size={64} className="mx-auto text-muted opacity-30 mb-6" />
+            <h3 className="text-xl font-semibold text-white mb-2">No Cities Found</h3>
+            <p className="text-muted">Try adjusting your search criteria.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {cities.map((city: any) => (
-              <div key={city.id} className="glass-pro group p-8 space-y-6 hover:border-primary/30 transition-all duration-500 relative overflow-hidden">
+              <div key={city.id} className="glass-pro group p-6 hover:border-accent-cyan/30 transition-all duration-300 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                   <Navigation size={100} />
+                  <Navigation size={80} />
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-3xl font-black text-white font-display tracking-tight uppercase group-hover:text-primary transition-colors">
-                    {city.name}
-                  </h3>
-                  <p className="flex items-center gap-2 text-[0.65rem] font-black uppercase tracking-widest text-text-muted">
-                    <MapPin size={12} className="text-primary" /> {city.country}
-                    {city.region && <span className="opacity-30">|</span>}
-                    {city.region && <span>{city.region}</span>}
-                  </p>
+                <div className="relative z-10">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-white font-display group-hover:text-accent-cyan transition-colors">
+                      {city.name}
+                    </h3>
+                    <p className="flex items-center gap-2 text-sm text-muted mt-1">
+                      <MapPin size={12} className="text-accent-cyan" />
+                      {city.country}
+                      {city.region && <span className="opacity-50">•</span>}
+                      {city.region && <span>{city.region}</span>}
+                    </p>
+                  </div>
+
+                  {city.description && (
+                    <p className="text-sm text-muted leading-relaxed mb-4 line-clamp-2">
+                      {city.description}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center gap-2">
+                      <Activity size={12} className="text-accent-lime" />
+                      <span className="text-xs font-medium text-white/80">{city.popularity}</span>
+                    </div>
+                    <div className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center gap-2">
+                      <DollarSign size={12} className="text-accent-yellow" />
+                      <span className="text-xs font-medium text-white/80">{city.costIndex}</span>
+                    </div>
+                    <div className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center gap-2">
+                      <Sparkles size={12} className="text-accent-pink" />
+                      <span className="text-xs font-medium text-white/80">{city._count.activities}</span>
+                    </div>
+                  </div>
+
+                  <Link href={`/cities/${city.id}`} className="btn-pro-outline w-full justify-center py-2.5 text-sm">
+                    View Details
+                  </Link>
                 </div>
-
-                {city.description && (
-                  <p className="text-sm text-text-muted leading-relaxed font-medium line-clamp-3">
-                    {city.description}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-2 pt-4">
-                  <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2">
-                    <Activity size={10} className="text-primary" />
-                    <span className="text-[0.6rem] font-black text-white uppercase tracking-tighter">Pop: {city.popularity}</span>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2">
-                    <DollarSign size={10} className="text-primary" />
-                    <span className="text-[0.6rem] font-black text-white uppercase tracking-tighter">Index: {city.costIndex}</span>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2">
-                    <Sparkles size={10} className="text-primary" />
-                    <span className="text-[0.6rem] font-black text-white uppercase tracking-tighter">{city._count.activities} Acts</span>
-                  </div>
-                </div>
-
-                <Link href={`/cities/${city.id}`} className="btn-pro-outline w-full h-12 text-[0.65rem] rounded-xl group-hover:bg-primary group-hover:text-surface group-hover:border-primary transition-all duration-500">
-                  Execute Discovery
-                </Link>
               </div>
             ))}
           </div>
         )}
       </main>
-    </div>
+    </AppChrome>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
+import AppChrome from "@/components/AppChrome";
 import Link from "next/link";
 import { addExpense, deleteExpense } from "@/actions/trips";
 import { formatCurrency } from "@/lib/utils";
@@ -61,12 +61,11 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
 
   if (loading || !trip) {
     return (
-      <>
-        <Navbar />
-        <main style={{ maxWidth: "900px", margin: "0 auto", padding: "4rem 1.5rem", textAlign: "center" }}>
-          <div className="skeleton" style={{ width: "250px", height: "28px", margin: "0 auto" }} />
+      <AppChrome>
+        <main className="max-w-[900px] mx-auto px-6 py-28 text-center">
+          <div className="animate-pulse h-8 bg-white/[0.08] rounded-xl w-56 mx-auto" />
         </main>
-      </>
+      </AppChrome>
     );
   }
 
@@ -82,18 +81,16 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
   const maxCat = Math.max(...byCategory.map((c) => c.total), actCost || 1);
 
   return (
-    <>
-      <Navbar />
-      <main style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem 1.5rem 4rem" }}>
-        <Link href={`/trips/${tripId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.875rem", marginBottom: "1.5rem" }}>
-          <ArrowLeft size={14} /> Back to Trip
+    <AppChrome contentClassName="page-shell page-shell--form py-10 lg:py-12">
+      <main className="">
+        <Link href={`/trips/${tripId}`} className="inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-muted hover:text-accent-cyan transition-colors mb-10 no-underline">
+          <ArrowLeft size={16} strokeWidth={1.75} /> Trip overview
         </Link>
 
-        <div className="animate-in" style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2rem", fontFamily: "var(--font-display)" }}>
-            Budget & <span className="gradient-text">Costs</span>
+        <div className="animate-in mb-12 space-y-2">
+          <h1 className="text-5xl lg:text-[2.85rem] font-semibold tracking-tight text-white">
+            Budget overview
           </h1>
-          <p style={{ color: "var(--color-text-secondary)" }}>{trip.name}</p>
         </div>
 
         {/* Total */}
@@ -192,6 +189,6 @@ export default function BudgetPage({ params }: { params: Promise<{ id: string }>
           ))}
         </div>
       </main>
-    </>
+    </AppChrome>
   );
 }
