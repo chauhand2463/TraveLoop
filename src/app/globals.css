@@ -57,10 +57,56 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     overscroll-behavior: none;
+    scroll-behavior: smooth;
+  }
+
+  /* Focus visible for accessibility */
+  :focus-visible {
+    outline: 2px solid #4cc9f0;
+    outline-offset: 2px;
+  }
+
+  /* Remove focus outline for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 
   #__next, main {
     min-height: 100vh;
+  }
+
+  /* Custom scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 
   body::before {
@@ -122,18 +168,40 @@
          bg-white text-bg font-semibold text-sm tracking-tight shadow-premium-soft
          transition-all duration-300 hover:-translate-y-px hover:opacity-[0.98] active:scale-[0.99]
          no-underline cursor-pointer border-none;
+  &:hover {
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(164, 246, 68, 0.2);
+  }
+  &:focus-visible {
+    outline: 2px solid #a4f644;
+    outline-offset: 2px;
+  }
 }
 
 @utility btn-pro-outline {
   @apply relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-medium
          border border-white/[0.12] text-white bg-transparent backdrop-blur-sm
          hover:bg-white/[0.06] transition-all duration-300 no-underline cursor-pointer;
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  &:focus-visible {
+    outline: 2px solid #4cc9f0;
+    outline-offset: 2px;
+  }
 }
 
 @utility input-pro {
   @apply w-full px-6 py-4 rounded-xl border outline-none transition-all duration-300
          bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/35
          focus:border-accent-cyan/55 focus:bg-white/[0.07];
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.15);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 @utility gradient-text {

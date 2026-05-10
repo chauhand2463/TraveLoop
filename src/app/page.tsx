@@ -136,12 +136,12 @@ export default function LandingPage() {
               {/* Main Headline */}
               <motion.h1
                 variants={floatInUp}
-                className="font-display text-[clamp(3rem,8vw,6rem)] font-semibold tracking-[-0.04em] text-white leading-[1.05]"
+                className="font-display text-[clamp(2.5rem,7vw,5rem)] font-semibold tracking-[-0.04em] text-white leading-[1.05]"
               >
                 Plan trips that
                 <br />
                 <span className="bg-gradient-to-r from-accent-lime via-accent-cyan to-accent-pink bg-clip-text text-transparent">
-                  tell a story
+                  become memories
                 </span>
               </motion.h1>
 

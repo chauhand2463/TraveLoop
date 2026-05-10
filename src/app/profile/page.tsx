@@ -2,22 +2,46 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AppChrome from "@/components/AppChrome";
-import { User, Mail, Globe, Save, Shield, Bell, Moon, Sun, Camera, Check, LogOut } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { User, Mail, Globe, Save, Shield, Bell, Moon, Sun, Camera, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession();
-  const router = useRouter();
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState("profile");
-  const [saved, setSaved] = useState(false);
+
+  const isLoading = status === "loading";
+
+  if (isLoading) {
+    return (
+      <AppChrome contentClassName="page-shell page-shell--narrow py-10 lg:py-14">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-12 w-12 rounded-full border-2 border-accent-lime/20 animate-pulse" />
+            <p className="text-sm text-muted">Loading...</p>
+          </div>
+        </div>
+      </AppChrome>
+    );
+  }
 
   if (!session) {
-    router.push("/login");
-    return null;
+    return (
+      <AppChrome contentClassName="page-shell page-shell--narrow py-10 lg:py-14">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-muted mb-4">Please sign in to view your profile</p>
+            <Link href="/login" className="btn-pro-primary">Sign In</Link>
+          </div>
+        </div>
+      </AppChrome>
+    );
   }
+
+  const userName = session.user?.name ?? "";
+  const userEmail = session.user?.email ?? "";
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
@@ -27,7 +51,9 @@ export default function ProfilePage() {
 
   return (
     <AppChrome contentClassName="page-shell page-shell--narrow py-10 lg:py-14">
-      <header className="mb-10">
+      <Breadcrumbs />
+      
+      <header className="mb-10 mt-6">
         <div className="flex items-center gap-4 mb-4">
           <span className="text-editorial text-accent-cyan">Account</span>
           <div className="h-px flex-1 bg-white/10 max-w-[180px]" />
@@ -77,14 +103,13 @@ export default function ProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-8"
             >
-              {/* Profile Card */}
               <section className="glass-pro rounded-2xl p-8">
                 <h3 className="text-xl font-semibold text-white mb-6">Profile Information</h3>
                 
                 <div className="flex items-center gap-6 mb-8">
                   <div className="relative">
                     <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-accent-lime to-accent-cyan flex items-center justify-center text-3xl font-bold text-bg">
-                      {session.user?.name?.slice(0, 2).toUpperCase() || "U"}
+                      {userName.slice(0, 2).toUpperCase() || "U"}
                     </div>
                     <button className="absolute -bottom-2 -right-2 p-2 rounded-full bg-card border border-white/[0.1] hover:bg-white/[0.1] transition-colors">
                       <Camera size={14} className="text-muted" />
@@ -104,7 +129,7 @@ export default function ProfilePage() {
                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
                         <input 
                           name="name" 
-                          defaultValue={session.user?.name || ""} 
+                          defaultValue={userName} 
                           className="input-pro pl-12" 
                           placeholder="Your name"
                         />
@@ -115,7 +140,7 @@ export default function ProfilePage() {
                       <div className="relative">
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
                         <input 
-                          value={session.user?.email || ""} 
+                          value={userEmail} 
                           disabled 
                           className="input-pro pl-12 opacity-60" 
                           readOnly 
@@ -134,15 +159,21 @@ export default function ProfilePage() {
                 </div>
               </section>
 
-              {/* Danger Zone */}
               <section className="glass-pro rounded-2xl p-8 border-red-500/10">
-                <h3 className="text-xl font-semibold text-white mb-4">Danger Zone</h3>
-                <p className="text-muted text-sm mb-6">
-                  Once you delete your account, there is no going back. Please be certain.
-                </p>
-                <button className="px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium">
-                  Delete Account
-                </button>
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-red-500/10">
+                    <AlertTriangle size={20} className="text-red-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-white mb-2">Danger Zone</h3>
+                    <p className="text-muted text-sm mb-6">
+                      Once you delete your account, there is no going back. Please be certain.
+                    </p>
+                    <button className="px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium">
+                      Delete Account
+                    </button>
+                  </div>
+                </div>
               </section>
             </motion.div>
           )}

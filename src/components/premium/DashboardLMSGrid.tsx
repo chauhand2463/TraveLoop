@@ -17,6 +17,12 @@ import {
   PlusCircle,
   Sparkles,
   TrendingUp,
+  Wallet,
+  Plane,
+  DollarSign,
+  Clock,
+  Star,
+  Bookmark,
 } from "lucide-react";
 import {
   Bar,

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   LayoutGrid,
   Map,
@@ -16,15 +16,26 @@ import {
   Plus,
   Sparkles,
   ChevronLeft,
+  Search,
+  Bell,
+  Settings,
+  HelpCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import GlobalSearch from "./GlobalSearch";
+import NotificationDropdown from "./NotificationDropdown";
 
 const SIDEBAR = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/trips", label: "Trips", icon: Map },
   { href: "/cities", label: "Cities", icon: Globe },
   { href: "/profile", label: "Account", icon: User },
+];
+
+const SIDEBAR_EXTRA = [
+  { href: "/profile", label: "Settings", icon: Settings },
+  { href: "#help", label: "Help", icon: HelpCircle },
 ];
 
 export type AppChromeProps = {
@@ -57,7 +68,7 @@ export default function AppChrome({
       <motion.aside
         initial={false}
         animate={{ 
-          width: sidebarCollapsed ? 72 : 240,
+          width: sidebarCollapsed ? 72 : 260,
           x: 0 
         }}
         transition={{ 
@@ -71,7 +82,7 @@ export default function AppChrome({
         )}
       >
         {/* Logo Section */}
-        <div className="pt-6 pb-4 px-3 lg:px-4 flex items-center justify-between">
+        <div className="pt-6 pb-4 px-3 lg:px-4">
           <Link href="/" className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 5 }}
@@ -92,17 +103,27 @@ export default function AppChrome({
               Traveloop
             </motion.span>
           </Link>
-          
-          {/* Collapse Button */}
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={cn(
-              "hidden lg:flex p-1.5 rounded-lg hover:bg-white/[0.06] text-muted hover:text-white transition-all",
-              sidebarCollapsed && "rotate-180"
+        </div>
+
+        {/* Global Search - Only show when not collapsed */}
+        <div className="px-3 lg:px-4 mb-4">
+          <AnimatePresence>
+            {!sidebarCollapsed && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <GlobalSearch />
+              </motion.div>
             )}
-          >
-            <ChevronLeft size={16} />
-          </button>
+          </AnimatePresence>
+          {sidebarCollapsed && (
+            <button className="w-full flex items-center justify-center p-3 rounded-xl hover:bg-white/[0.04] text-muted hover:text-white transition-colors">
+              <Search size={18} />
+            </button>
+          )}
         </div>
 
         {/* Quick Action */}
@@ -152,7 +173,6 @@ export default function AppChrome({
                     : "text-muted hover:text-white hover:bg-white/[0.04]"
                 )}
               >
-                {/* Active indicator */}
                 {on && (
                   <motion.div
                     layoutId="activeIndicator"
@@ -188,34 +208,24 @@ export default function AppChrome({
           })}
         </nav>
 
-        {/* Upgrade Banner */}
-        <div className="px-3 lg:px-4 mb-3">
-          <motion.div
-            whileHover={{ scale: 1.01 }}
-            className={cn(
-              "p-3 rounded-xl bg-gradient-to-r from-accent-pink/10 to-accent-cyan/10 border border-white/[0.06]",
-              sidebarCollapsed && "p-2"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <Sparkles size={16} className="text-accent-pink shrink-0" />
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ 
-                  opacity: sidebarCollapsed ? 0 : 1,
-                  width: sidebarCollapsed ? 0 : 'auto'
-                }}
-                className="overflow-hidden"
-              >
-                <p className="text-xs font-semibold text-white">Upgrade to Pro</p>
-                <p className="text-[10px] text-muted">Unlock premium features</p>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
+        {/* Bottom Actions - Search & Notifications when collapsed */}
+        {sidebarCollapsed && (
+          <div className="px-3 py-2 space-y-1">
+            <button className="w-full flex items-center justify-center p-2.5 rounded-xl hover:bg-white/[0.04] text-muted hover:text-white transition-colors">
+              <Search size={18} />
+            </button>
+          </div>
+        )}
 
         {/* User Section */}
         <div className="p-3 lg:p-4 border-t border-white/[0.06]">
+          {/* Notification Bell - Only when collapsed */}
+          {sidebarCollapsed && (
+            <div className="mb-3 flex justify-center">
+              <NotificationDropdown />
+            </div>
+          )}
+
           <div className={cn(
             "flex items-center gap-3 p-2 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer",
             sidebarCollapsed && "justify-center"
@@ -321,6 +331,10 @@ export default function AppChrome({
             </div>
 
             <div className="p-4">
+              <GlobalSearch />
+            </div>
+
+            <div className="p-4">
               <Link href="/trips/new" onClick={() => setMobileOpen(false)}>
                 <motion.button
                   whileTap={{ scale: 0.98 }}
@@ -360,17 +374,18 @@ export default function AppChrome({
               })}
             </nav>
 
-            <div className="p-4 border-t border-white/[0.06]">
+            <div className="p-4 border-t border-white/[0.06] flex items-center justify-between">
+              <NotificationDropdown />
               {session ? (
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-400/20 text-red-400 hover:bg-red-400/10 transition-colors"
+                  className="flex items-center gap-2 py-2 px-4 rounded-xl border border-red-400/20 text-red-400 hover:bg-red-400/10 transition-colors"
                 >
                   <LogOut size={18} />
                   <span className="text-sm font-medium">Sign Out</span>
                 </button>
               ) : (
-                <Link href="/login" onClick={() => setMobileOpen(false)} className="block text-center text-sm text-muted hover:text-white">
+                <Link href="/login" onClick={() => setMobileOpen(false)} className="text-sm text-muted hover:text-white">
                   Sign In
                 </Link>
               )}
@@ -391,6 +406,20 @@ export default function AppChrome({
           ease: [0.16, 1, 0.3, 1] 
         }}
       >
+        {/* Top Bar for Mobile */}
+        <div className="sticky top-0 z-40 md:hidden flex items-center justify-between px-4 py-3 bg-bg/80 backdrop-blur-xl border-b border-white/[0.06]">
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="p-2 rounded-lg hover:bg-white/[0.06] text-muted"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <NotificationDropdown />
+          </div>
+        </div>
+        
         {/* Mobile Menu Button - Fixed FAB */}
         <motion.button
           initial={{ scale: 0 }}

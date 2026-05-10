@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { formatDateRange, formatCurrency, getDaysBetween } from "@/lib/utils";
 import Link from "next/link";
 import AppChrome from "@/components/AppChrome";
-import { MapPin, Calendar, DollarSign, Globe } from "lucide-react";
+import { MapPin, Calendar, DollarSign, Globe, Copy, Share2, Sparkles } from "lucide-react";
 
 export default async function SharedTripPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

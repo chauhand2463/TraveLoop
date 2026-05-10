@@ -3,8 +3,10 @@ import { prisma } from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import AppChrome from "@/components/AppChrome";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import EmptyState from "@/components/EmptyState";
 import { formatDateRange, formatCurrency, getDaysBetween } from "@/lib/utils";
-import { Calendar, DollarSign, Pencil, Share2, ListChecks, StickyNote, ArrowLeft, Globe, Navigation, MapPin } from "lucide-react";
+import { Calendar, DollarSign, Pencil, Share2, ListChecks, StickyNote, ArrowLeft, Globe, Navigation, MapPin, Plus } from "lucide-react";
 
 export default async function TripViewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -45,11 +47,9 @@ export default async function TripViewPage({ params }: { params: Promise<{ id: s
           <div className="mesh-gradient absolute inset-0 z-0 opacity-[0.4]" />
 
           <div className="page-shell relative z-20 w-full">
-            <Link href="/trips" className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-accent-cyan transition-colors mb-6 no-underline">
-              <ArrowLeft size={16} /> Back to Trips
-            </Link>
+            <Breadcrumbs />
             
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mt-6">
               <div className="min-w-0">
                 <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
                   {trip.name}
@@ -95,14 +95,16 @@ export default async function TripViewPage({ params }: { params: Promise<{ id: s
             </div>
 
             {trip.stops.length === 0 ? (
-              <div className="glass-pro p-12 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-accent-cyan/10 flex items-center justify-center">
-                  <MapPin size={32} className="text-accent-cyan" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">No Stops Yet</h3>
-                <p className="text-muted mb-6">Add cities and activities to your itinerary.</p>
-                <Link href={`/trips/${trip.id}/builder`} className="btn-pro-primary">Add First Stop</Link>
-              </div>
+              <EmptyState
+                icon={MapPin}
+                title="No Stops Yet"
+                description="Add cities and activities to your itinerary to start planning your adventure."
+                action={
+                  <Link href={`/trips/${trip.id}/builder`} className="btn-pro-primary">
+                    <Plus size={18} /> Add First Stop
+                  </Link>
+                }
+              />
             ) : (
               <div className="space-y-6 relative">
                 <div className="absolute left-[20px] top-8 bottom-8 w-[2px] bg-gradient-to-b from-accent-cyan/40 via-accent-lime/40 to-accent-pink/40" />

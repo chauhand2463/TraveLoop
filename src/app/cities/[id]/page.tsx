@@ -1,93 +1,150 @@
+"use client";
+
+import { useState } from "react";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
-import AppChrome from "@/components/AppChrome";
 import Link from "next/link";
+import AppChrome from "@/components/AppChrome";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { cn, formatCurrency } from "@/lib/utils";
-import { ArrowLeft, Clock, DollarSign, Sparkles } from "lucide-react";
+import { ArrowLeft, Clock, DollarSign, Sparkles, Search, Filter, MapPin } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default async function CityActivitiesPage({
-  params,
-}: {
+type Activity = {
+  id: string;
+  name: string;
+  type: string;
+  duration: number | null;
+  description: string | null;
+  cost: number;
+};
+
+export default function CityActivitiesPage({ 
+  params 
+}: { 
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const city = await prisma.city.findUnique({
-    where: { id },
-    include: { activities: { orderBy: { type: "asc" } } },
-  });
-
-  if (!city) notFound();
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  
   return (
     <AppChrome>
-      <Link
-        href="/cities"
-        className="inline-flex mb-10 items-center gap-3 rounded-full px-5 py-2.5 border border-white/[0.1] bg-white/[0.03] text-muted text-[12px] hover:text-accent-cyan hover:bg-white/[0.06] no-underline font-semibold uppercase tracking-[0.2em]"
-      >
-        <ArrowLeft size={16} strokeWidth={1.75} /> Cities index
-      </Link>
+      <div className="page-shell py-10 lg:py-14 pb-16">
+        <Breadcrumbs />
+        
+        <Link
+          href="/cities"
+          className="inline-flex mt-6 items-center gap-2 text-sm font-medium text-muted hover:text-accent-cyan transition-colors no-underline"
+        >
+          <ArrowLeft size={16} /> Back to Cities
+        </Link>
 
-      {city.description && (
-        <p className="text-muted max-w-[720px] text-lg mb-10 leading-relaxed">{city.description}</p>
-      )}
-
-      <div className="flex flex-wrap gap-3 mb-12">
-        {[
-          `Popularity ${city.popularity}/100`,
-          `Cost index ${city.costIndex}/100`,
-          `${city.activities.length} activities`,
-        ].map((chip, idx) => (
-          <span
-            key={`${chip}-${idx}`}
-            className={cn(
-              "rounded-full border px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em]",
-              idx === 0 && "border-accent-cyan/45 text-accent-cyan bg-accent-cyan/[0.08]",
-              idx === 1 && "border-accent-pink/35 text-accent-pink bg-accent-pink/[0.08]",
-              idx === 2 && "border-accent-lime/35 text-accent-lime bg-accent-lime/[0.06]"
-            )}
-          >
-            {chip}
-          </span>
-        ))}
-      </div>
-
-      <h2 className="text-2xl font-semibold mb-8 flex gap-10 items-center text-white">
-        <Sparkles strokeWidth={1.75} size={28} className="text-accent-cyan" /> Things to do
-      </h2>
-
-      {city.activities.length === 0 ? (
-        <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.02] px-12 py-16 text-muted text-center">
-          No curated activities listed for this city yet.
+        <div className="mt-8 mb-6">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-white font-display">City Activities</h1>
+          <p className="text-muted mt-2">Discover things to do in this destination</p>
         </div>
-      ) : (
-        <div className="grid gap-6 md:gap-8 sm:grid-cols-2 xl:grid-cols-3">
-          {city.activities.map((act: { id: string; name: string; type: string; duration: number | null; description: string | null; cost: number }) => (
-            <div key={act.id} className="glass-pro rounded-[22px] px-8 py-8 flex flex-col">
-              <h3 className="text-xl leading-snug mb-5 font-semibold text-white">{act.name}</h3>
-              <div className="flex flex-wrap gap-3 mb-4">
-                <span className="rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider border border-accent-cyan/30 text-accent-cyan">
+
+        {false && (
+          <p className="text-muted max-w-[720px] text-lg mb-8 leading-relaxed">City description here</p>
+        )}
+
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search activities..."
+              className="input-pro pl-12"
+            />
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {["Sightseeing", "Food", "Adventure", "Culture", "Nightlife"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(activeFilter === filter ? null : filter)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                  activeFilter === filter
+                    ? "bg-accent-cyan/20 border-accent-cyan/50 text-accent-cyan"
+                    : "border-white/[0.1] text-muted hover:text-white hover:border-white/[0.2]"
+                )}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 mb-8">
+          <span className="rounded-full border border-accent-cyan/45 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-accent-cyan bg-accent-cyan/[0.08]">
+            Popularity: 85/100
+          </span>
+          <span className="rounded-full border border-accent-pink/35 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-accent-pink bg-accent-pink/[0.08]">
+            Cost index: 72/100
+          </span>
+          <span className="rounded-full border border-accent-lime/35 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-accent-lime bg-accent-lime/[0.06]">
+            24 activities
+          </span>
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-8 flex items-center gap-3 text-white">
+          <Sparkles size={24} className="text-accent-cyan" /> Things to Do
+        </h2>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[
+            { id: "1", name: "Eiffel Tower Visit", type: "Sightseeing", duration: 120, description: "Iconic iron lattice tower with panoramic city views", cost: 25 },
+            { id: "2", name: "Louvre Museum Tour", type: "Culture", duration: 180, description: "World's largest art museum with Mona Lisa", cost: 22 },
+            { id: "3", name: "Seine River Cruise", type: "Sightseeing", duration: 60, description: "Scenic boat ride past Parisian landmarks", cost: 15 },
+            { id: "4", name: "French Cooking Class", type: "Food", duration: 180, description: "Learn to make croissants and macarons", cost: 85 },
+            { id: "5", name: "Montmartre Walking Tour", type: "Culture", duration: 90, description: "Explore artistic neighborhood and Sacré-Cœur", cost: 20 },
+            { id: "6", name: "Paris Night Tour", type: "Nightlife", duration: 180, description: "See the City of Lights at night", cost: 45 },
+            { id: "7", name: "Versailles Day Trip", type: "Sightseeing", duration: 300, description: "Historic royal palace and gardens", cost: 35 },
+            { id: "8", name: "Wine Tasting Experience", type: "Food", duration: 90, description: "Sample finest French wines", cost: 55 },
+            { id: "9", name: "Catacombs Underground", type: "Adventure", duration: 120, description: "Explore eerie underground ossuary", cost: 30 },
+          ].map((act) => (
+            <motion.div
+              key={act.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-pro p-6 group hover:border-accent-cyan/30 transition-all"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <span className="px-3 py-1 rounded-full text-xs font-medium border border-accent-cyan/30 text-accent-cyan bg-accent-cyan/[0.08]">
                   {act.type}
                 </span>
-                {act.duration != null && (
-                  <span className="rounded-full px-4 py-1.5 inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] border border-accent-yellow/30 text-accent-yellow">
-                    <Clock size={11} strokeWidth={2} />
+                {act.duration && (
+                  <span className="flex items-center gap-1 text-xs text-muted">
+                    <Clock size={12} />
                     {act.duration} min
                   </span>
                 )}
               </div>
-              {act.description && (
-                <p className="text-[15px] text-muted mb-6 flex-1">{act.description}</p>
-              )}
-              <div className="flex items-center gap-3 text-accent-cyan mt-auto pt-4">
-                <DollarSign size={18} strokeWidth={1.75} />
-                <span className="text-xl tracking-tighter font-semibold">
-                  {formatCurrency(act.cost)}
-                </span>
+              
+              <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-accent-cyan transition-colors">
+                {act.name}
+              </h3>
+              
+              <p className="text-sm text-muted mb-6 line-clamp-2">
+                {act.description}
+              </p>
+              
+              <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+                <div className="flex items-center gap-2 text-accent-cyan">
+                  <DollarSign size={16} strokeWidth={1.75} />
+                  <span className="text-lg font-semibold">{formatCurrency(act.cost)}</span>
+                </div>
+                <button className="btn-pro-outline py-2 px-4 text-xs">
+                  Add to Trip
+                </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      )}
+      </div>
     </AppChrome>
   );
 }
