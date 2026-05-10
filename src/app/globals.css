@@ -1,3 +1,8 @@
+/* 
+  NOTE: "Unknown at rule" warnings (@theme, @utility, @apply) in this file are FALSE POSITIVES.
+  This project uses Tailwind CSS v4 which introduces these modern CSS features. 
+  The build pipeline (Turbopack) processes them correctly.
+*/
 @import "tailwindcss";
 
 @theme {
@@ -29,7 +34,13 @@
   }
 
   body {
-    @apply min-h-screen selection:bg-primary/30 selection:text-primary;
+    @apply min-h-screen selection:bg-primary/30 selection:text-primary relative;
+  }
+
+  body::before {
+    content: "";
+    @apply fixed inset-0 z-[100] pointer-events-none opacity-[0.03] mix-blend-overlay;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
   }
 
   h1, h2, h3, h4 {
@@ -40,7 +51,10 @@
 /* Definition of Utilities for v4 Compatibility */
 @utility glass-pro {
   @apply bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-pro shadow-pro relative overflow-hidden;
-  background-image: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent);
+  background-image: 
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.01) 3px, transparent 3px);
+  background-size: 100% 100%, 100% 4px;
 }
 
 @utility btn-pro-primary {

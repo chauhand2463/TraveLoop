@@ -10,7 +10,7 @@ const fadeUpVariants = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
 };
-const fadeUpTransition = { duration: 0.8, ease: [0.16, 1, 0.3, 1] };
+const fadeUpTransition: any = { duration: 0.8, ease: [0.16, 1, 0.3, 1] };
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,6 +51,33 @@ export default function LandingPage() {
 
       {/* Hero Section: Massive Typography */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 px-6 z-10">
+        {/* Floating Intelligence Panels */}
+        <motion.div 
+          animate={{ y: [0, -20, 0], rotate: [0, 2, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[20%] left-[10%] hidden xl:block z-20"
+        >
+          <div className="glass-pro p-6 flex flex-col gap-2 border-primary/20 rotate-[-4deg]">
+            <span className="text-[0.6rem] font-black text-primary uppercase tracking-widest">Active Trajectory</span>
+            <span className="text-lg font-black italic">ICELAND // REYKJAVIK</span>
+            <div className="flex gap-1 mt-2">
+              <div className="h-1 w-12 bg-primary rounded-full" />
+              <div className="h-1 w-4 bg-white/20 rounded-full" />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          animate={{ y: [0, 20, 0], rotate: [0, -2, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[20%] right-[10%] hidden xl:block z-20"
+        >
+          <div className="glass-pro p-6 flex flex-col gap-2 border-accent/20 rotate-[4deg]">
+            <span className="text-[0.6rem] font-black text-accent uppercase tracking-widest">Collective Volume</span>
+            <span className="text-lg font-black italic">1,402 GUESTS</span>
+            <span className="text-[0.55rem] font-bold text-white/40">SYNCED REAL-TIME</span>
+          </div>
+        </motion.div>
         <motion.div 
           style={{ scale: heroScale, opacity: heroOpacity }}
           className="max-w-[1400px] w-full text-center space-y-12"
@@ -58,7 +85,7 @@ export default function LandingPage() {
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] } as any}
             className="inline-flex items-center gap-3 px-6 py-2 rounded-full glass-pro border-white/5"
           >
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -112,23 +139,17 @@ export default function LandingPage() {
           <span className="text-[0.6rem] font-black uppercase tracking-[0.4em] text-white/30">Verified Strategic Partners</span>
           <Link href="/cities" className="text-[0.6rem] font-black uppercase tracking-[0.4em] text-primary hover:text-white transition-colors">Explore Global Index</Link>
         </div>
-        <div className="flex overflow-hidden gap-12 select-none">
+        <div className="flex overflow-hidden select-none">
           <motion.div 
-            animate={{ x: [0, -1000] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-            className="flex flex-none gap-24 items-center"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            className="flex flex-none gap-24 items-center whitespace-nowrap"
           >
-            {["AETHER", "VORTEX", "LUMINA", "OBSIDIAN", "ZENITH", "STRATOS", "KINETIC", "ORACLE"].map((brand) => (
-              <span key={brand} className="text-4xl font-black text-white/10 tracking-[0.3em] italic">{brand}</span>
-            ))}
-          </motion.div>
-          <motion.div 
-            animate={{ x: [0, -1000] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-            className="flex flex-none gap-24 items-center"
-          >
-            {["AETHER", "VORTEX", "LUMINA", "OBSIDIAN", "ZENITH", "STRATOS", "KINETIC", "ORACLE"].map((brand) => (
-              <span key={brand} className="text-4xl font-black text-white/10 tracking-[0.3em] italic">{brand}</span>
+            {[
+              "AMAN TOKYO", "REYKJAVIK", "SINGAPORE", "BELMOND", "KYOTO", "ST. MORITZ", "ALULA", "HOKKAIDO",
+              "AMAN TOKYO", "REYKJAVIK", "SINGAPORE", "BELMOND", "KYOTO", "ST. MORITZ", "ALULA", "HOKKAIDO"
+            ].map((name, i) => (
+              <span key={i} className="text-4xl font-black text-white/10 tracking-[0.3em] italic">{name}</span>
             ))}
           </motion.div>
         </div>
@@ -138,26 +159,30 @@ export default function LandingPage() {
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           {[
-            { icon: <Globe size={32} />, title: "Global Sync", desc: "Real-time trajectory alignment across 190+ jurisdictions." },
-            { icon: <Zap size={32} />, title: "Instant Alpha", desc: "Proprietary intelligence protocols for immediate routing." },
-            { icon: <Shield size={32} />, title: "Elite Security", desc: "Military-grade encryption for all itinerary data." }
+            { icon: <Globe size={32} />, title: "Global Sync", desc: "Real-time trajectory alignment across 190+ jurisdictions with ultra-low latency protocols.", stat: "190+ PORTS" },
+            { icon: <Zap size={32} />, title: "Instant Alpha", desc: "Proprietary intelligence protocols for immediate routing and elite access optimization.", stat: "SUB-50MS SYNC" },
+            { icon: <Shield size={32} />, title: "Elite Security", desc: "Military-grade encryption and decentralized storage for all high-value itinerary data.", stat: "E2E ENCRYPTED" }
           ].map((feature, i) => (
             <motion.div 
               key={i}
               variants={fadeUpVariants}
               initial="initial"
               whileInView="animate"
-              viewport={{ once: true }}
-              transition={{ ...fadeUpTransition, delay: 0.2 * i }}
-              className="p-10 glass-pro group hover:border-primary/30 transition-colors"
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ ...fadeUpTransition, delay: 0.1 * i } as any}
+              className="p-12 glass-pro group hover:border-primary/40 transition-all duration-500 hover:-translate-y-2"
             >
-              <div className="text-primary mb-8 group-hover:scale-110 transition-transform origin-left">
-                {feature.icon}
+              <div className="flex justify-between items-start mb-12">
+                <div className="text-primary group-hover:scale-110 transition-transform origin-left">
+                  {feature.icon}
+                </div>
+                <span className="text-[0.55rem] font-black text-white/20 tracking-[0.2em]">{feature.stat}</span>
               </div>
-              <h3 className="text-2xl font-black uppercase mb-4 tracking-tight">{feature.title}</h3>
-              <p className="text-text-muted leading-relaxed font-medium">
+              <h3 className="text-3xl font-black uppercase mb-6 tracking-tighter">{feature.title}</h3>
+              <p className="text-text-muted leading-relaxed font-medium text-lg mb-8">
                 {feature.desc}
               </p>
+              <div className="h-px w-full bg-white/5 group-hover:bg-primary/20 transition-colors" />
             </motion.div>
           ))}
         </div>
