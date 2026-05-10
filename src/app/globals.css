@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  /* Obsidian Editorial Palette - Human-Made Precision */
+  --color-surface: oklch(0.12 0.01 260);
+  --color-surface-raised: oklch(0.16 0.01 260);
+  --color-primary: oklch(0.85 0.18 145); /* Neon Green */
+  --color-primary-dim: oklch(0.4 0.1 145);
+  --color-accent: oklch(0.7 0.2 30); /* Coral Accent */
+  
+  --color-text: oklch(0.98 0.01 260);
+  --color-text-muted: oklch(0.6 0.01 260);
+  
+  --font-display: var(--font-display), "Outfit", sans-serif;
+  --font-body: var(--font-sans), "Inter", sans-serif;
+
+  --radius-pro: 1.5rem;
+  --radius-inner: 0.75rem;
+
+  --shadow-pro: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  :root {
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply min-h-screen selection:bg-primary/30 selection:text-primary;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight font-black;
+  }
+}
+
+/* Definition of Utilities for v4 Compatibility */
+@utility glass-pro {
+  @apply bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-pro shadow-pro relative overflow-hidden;
+  background-image: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent);
+}
+
+@utility btn-pro-primary {
+  @apply relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-5 
+         bg-primary text-surface font-black uppercase tracking-[0.2em] rounded-inner
+         hover:scale-[1.02] active:scale-[0.98] transition-all duration-500
+         shadow-[0_0_20px_rgba(180,255,50,0.2)] no-underline cursor-pointer border-none;
+}
+
+@utility btn-pro-outline {
+  @apply relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-3 
+         bg-transparent text-white border border-white/10 font-black uppercase tracking-[0.2em] rounded-inner
+         hover:bg-white/5 transition-all duration-500 no-underline cursor-pointer;
+}
+
+@utility input-pro {
+  @apply w-full px-6 py-4 bg-white/[0.02] border border-white/5 rounded-inner
+         text-white placeholder:text-white/20 outline-none
+         focus:border-primary/50 focus:bg-white/[0.05] transition-all duration-300;
+}
+
+@utility gradient-text {
+  @apply bg-clip-text text-transparent bg-linear-to-r from-white via-white to-white/50;
+}
+
+@utility neon-text {
+  @apply text-primary drop-shadow-[0_0_8px_rgba(180,255,50,0.5)];
+}
+
+@utility text-editorial {
+  @apply text-[0.65rem] font-black uppercase tracking-[0.3em] text-primary/80 block;
+}
+
+@layer components {
+  .btn-pro-primary::after {
+    @apply content-[''] absolute inset-0 bg-white/20 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700 ease-in-out;
+  }
+
+  /* Cinematic Mesh */
+  .mesh-gradient {
+    background-color: var(--color-surface);
+    background-image: 
+      radial-gradient(at 0% 0%, oklch(0.2 0.1 260) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, oklch(0.2 0.05 145 / 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, oklch(0.2 0.1 30 / 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, oklch(0.15 0.05 260) 0px, transparent 50%);
+  }
+
+  .nav-pill {
+    @apply fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-pro px-6 py-3 rounded-full flex items-center gap-8 border-white/5;
+  }
+}
+
+/* Custom Scrollbar for Obsidian feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-primary/50 transition-colors;
+}
+
+/* Animations - Human Easing */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
